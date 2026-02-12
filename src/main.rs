@@ -46,8 +46,8 @@ async fn main() {
         // Whitelist API
         .route("/api/whitelist", get(routes::whitelist::list))
         .route("/api/whitelist", post(routes::whitelist::create))
-        .route("/api/whitelist/{id}", get(routes::whitelist::get))
-        .route("/api/whitelist/{id}", delete(routes::whitelist::delete))
+        .route("/api/whitelist/:id", get(routes::whitelist::get))
+        .route("/api/whitelist/:id", delete(routes::whitelist::delete))
         // State
         .with_state(state)
         // Middleware
