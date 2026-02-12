@@ -55,7 +55,7 @@ async fn main() {
         .layer(TraceLayer::new_for_http());
 
     // Start server
-    let addr = SocketAddr::from(([127, 0, 0, 1], 3030));
+    let addr = SocketAddr::from(([127, 0, 0, 1], 4040));
     tracing::info!("API server listening on {}", addr);
 
     let listener = tokio::net::TcpListener::bind(addr).await.unwrap();
