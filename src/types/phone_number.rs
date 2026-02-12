@@ -50,9 +50,6 @@ impl PhoneNumber {
         Ok(Self(format!("+1{ten}")))
     }
 
-    pub fn as_e164(&self) -> &str {
-        &self.0
-    }
 }
 
 // sqlx Type/Encode/Decode — delegate to the inner String

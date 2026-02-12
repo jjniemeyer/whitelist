@@ -10,9 +10,6 @@ pub enum AppError {
     #[error("database error: {0}")]
     Database(#[from] sqlx::Error),
 
-    #[error("not implemented")]
-    NotImplemented,
-
     #[error("not found")]
     NotFound,
 
@@ -26,9 +23,6 @@ impl IntoResponse for AppError {
             AppError::Database(e) => {
                 tracing::error!("Database error: {:?}", e);
                 (StatusCode::INTERNAL_SERVER_ERROR, "Database error")
-            }
-            AppError::NotImplemented => {
-                (StatusCode::NOT_IMPLEMENTED, "Not implemented")
             }
             AppError::NotFound => {
                 (StatusCode::NOT_FOUND, "Not found")
