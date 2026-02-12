@@ -7,6 +7,8 @@ mod routes;
 mod db;
 mod error;
 mod models;
+mod state;
+mod types;
 
 #[tokio::main]
 async fn main() {
