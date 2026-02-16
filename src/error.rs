@@ -1,9 +1,9 @@
+use crate::models::ApiResponse;
 use axum::{
+    Json,
     http::StatusCode,
     response::{IntoResponse, Response},
-    Json,
 };
-use crate::models::ApiResponse;
 
 #[derive(Debug, thiserror::Error)]
 pub enum AppError {
@@ -24,12 +24,8 @@ impl IntoResponse for AppError {
                 tracing::error!("Database error: {:?}", e);
                 (StatusCode::INTERNAL_SERVER_ERROR, "Database error")
             }
-            AppError::NotFound => {
-                (StatusCode::NOT_FOUND, "Not found")
-            }
-            AppError::BadRequest(msg) => {
-                (StatusCode::BAD_REQUEST, msg.as_str())
-            }
+            AppError::NotFound => (StatusCode::NOT_FOUND, "Not found"),
+            AppError::BadRequest(msg) => (StatusCode::BAD_REQUEST, msg.as_str()),
         };
 
         let body = Json(ApiResponse::<()>::error(message));
