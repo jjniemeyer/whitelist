@@ -6,6 +6,7 @@ use uuid::Uuid;
 use crate::types::PhoneNumber;
 
 #[derive(Debug, Clone, Serialize, Deserialize, sqlx::Type)]
+#[serde(rename_all = "lowercase")]
 #[sqlx(type_name = "booking_status", rename_all = "lowercase")]
 pub enum BookingStatus {
     Pending,
