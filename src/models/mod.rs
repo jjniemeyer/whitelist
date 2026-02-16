@@ -1,3 +1,5 @@
+pub mod booking;
+
 use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
