@@ -1,12 +1,15 @@
-use axum::{routing::{get, post, delete}, Router};
+use axum::{
+    Router,
+    routing::{delete, get, patch, post},
+};
 use std::net::SocketAddr;
 use tower_http::cors::{Any, CorsLayer};
 use tower_http::trace::TraceLayer;
 
-mod routes;
 mod db;
 mod error;
 mod models;
+mod routes;
 mod state;
 mod types;
 
@@ -48,6 +51,11 @@ async fn main() {
         .route("/api/whitelist", post(routes::whitelist::create))
         .route("/api/whitelist/:id", get(routes::whitelist::get))
         .route("/api/whitelist/:id", delete(routes::whitelist::delete))
+        // Bookings API
+        .route("/api/bookings", get(routes::bookings::list))
+        .route("/api/bookings", post(routes::bookings::create))
+        .route("/api/bookings/:id", get(routes::bookings::get))
+        .route("/api/bookings/:id", patch(routes::bookings::update_status))
         // State
         .with_state(state)
         // Middleware

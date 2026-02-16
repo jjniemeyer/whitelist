@@ -42,14 +42,11 @@ impl PhoneNumber {
             ));
         }
         if nxx.starts_with('0') || nxx.starts_with('1') {
-            return Err(PhoneNumberError(
-                "exchange must start with 2-9".to_string(),
-            ));
+            return Err(PhoneNumberError("exchange must start with 2-9".to_string()));
         }
 
         Ok(Self(format!("+1{ten}")))
     }
-
 }
 
 // sqlx Type/Encode/Decode — delegate to the inner String
