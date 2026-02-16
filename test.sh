@@ -9,11 +9,11 @@ check() {
   local desc="$1" expected="$2" actual="$3"
   if [[ "$actual" == *"$expected"* ]]; then
     echo "  PASS: $desc"
-    ((PASS++))
+    ((PASS++)) || true
   else
     echo "  FAIL: $desc (expected '$expected')"
     echo "    got: $actual"
-    ((FAIL++))
+    ((FAIL++)) || true
   fi
 }
 
