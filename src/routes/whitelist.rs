@@ -1,27 +1,46 @@
 use axum::{
     Json,
-    extract::{Path, State},
+    extract::{Path, Query, State},
 };
 use uuid::Uuid;
 
 use crate::error::AppError;
-use crate::models::{ApiResponse, CreateWhitelistEntry, WhitelistEntry};
+use crate::models::{ApiResponse, CreateWhitelistEntry, Pagination, PaginatedResponse, WhitelistEntry};
 use crate::state::AppState;
 use crate::types::PhoneNumber;
 
-/// GET /api/whitelist - List all whitelist entries
+/// GET /api/whitelist - List whitelist entries with pagination
 pub async fn list(
     State(state): State<AppState>,
-) -> Result<Json<ApiResponse<Vec<WhitelistEntry>>>, AppError> {
+    Query(pagination): Query<Pagination>,
+) -> Result<Json<ApiResponse<PaginatedResponse<WhitelistEntry>>>, AppError> {
+    let pagination = pagination
+        .validate()
+        .map_err(|msg| AppError::BadRequest(msg))?;
+
+    let total: (i64,) = sqlx::query_as(
+        "SELECT COUNT(*) FROM whitelist_entries",
+    )
+    .fetch_one(&state.pool)
+    .await?;
+
     let entries = sqlx::query_as::<_, WhitelistEntry>(
         "SELECT id, phone_number, name, reason, created_at, expires_at, is_permanent
          FROM whitelist_entries
-         ORDER BY created_at DESC",
+         ORDER BY created_at DESC
+         LIMIT $1 OFFSET $2",
     )
+    .bind(pagination.limit())
+    .bind(pagination.offset())
     .fetch_all(&state.pool)
     .await?;
 
-    Ok(Json(ApiResponse::success(entries)))
+    Ok(Json(ApiResponse::success(PaginatedResponse {
+        total: total.0,
+        page: pagination.page,
+        per_page: pagination.per_page,
+        data: entries,
+    })))
 }
 
 /// GET /api/whitelist/{id} - Get a specific whitelist entry
