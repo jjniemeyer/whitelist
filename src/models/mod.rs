@@ -51,3 +51,57 @@ impl<T> ApiResponse<T> {
         }
     }
 }
+
+// --- Pagination ---
+
+const MAX_PER_PAGE: u32 = 100;
+
+fn default_page() -> u32 {
+    1
+}
+
+fn default_per_page() -> u32 {
+    20
+}
+
+#[derive(Debug, Deserialize)]
+pub struct Pagination {
+    #[serde(default = "default_page")]
+    pub page: u32,
+    #[serde(default = "default_per_page")]
+    pub per_page: u32,
+}
+
+impl Pagination {
+    /// Validate pagination parameters.
+    /// Returns Err with a human-readable message if page or per_page is 0.
+    /// Clamps per_page to MAX_PER_PAGE silently.
+    pub fn validate(mut self) -> Result<Self, String> {
+        if self.page == 0 {
+            return Err("page must be >= 1".to_string());
+        }
+        if self.per_page == 0 {
+            return Err("per_page must be >= 1".to_string());
+        }
+        if self.per_page > MAX_PER_PAGE {
+            self.per_page = MAX_PER_PAGE;
+        }
+        Ok(self)
+    }
+
+    pub fn offset(&self) -> i64 {
+        ((self.page - 1) * self.per_page) as i64
+    }
+
+    pub fn limit(&self) -> i64 {
+        self.per_page as i64
+    }
+}
+
+#[derive(Debug, Serialize)]
+pub struct PaginatedResponse<T: Serialize> {
+    pub total: i64,
+    pub page: u32,
+    pub per_page: u32,
+    pub data: Vec<T>,
+}
